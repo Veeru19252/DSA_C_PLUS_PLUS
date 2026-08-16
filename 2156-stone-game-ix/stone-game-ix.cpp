@@ -1,13 +1,18 @@
 class Solution {
 public:
     bool stoneGameIX(vector<int>& stones) {
-        int cnt[3] = {0, 0, 0};
-        for (int s : stones) ++cnt[s % 3];
+        int cnt[3] = {0};
+        for (int x : stones) ++cnt[x % 3];
 
-        int c0 = cnt[0], c1 = cnt[1], c2 = cnt[2];
-
-        if (c0 % 2 == 0)                     // even number of neutral (mod 3 == 0) stones
-            return c1 > 0 && c2 > 0;         // Alice wins iff both residue-1 and residue-2 exist
-        return abs(c1 - c2) > 2;             // odd neutral stones: Alice wins iff imbalance > 2
+        // Stones with remainder 0 never change the running sum mod 3,
+        // so they act as "free passes". Their parity decides the outcome.
+        if (cnt[0] % 2 == 0) {
+            // Even passes: Alice wins iff BOTH remainder-1 and remainder-2
+            // stones exist (otherwise she is forced to make sum % 3 == 0).
+            return cnt[1] != 0 && cnt[2] != 0;
+        }
+        // Odd passes flip parity: Alice wins iff the two non-zero classes
+        // differ by at least 3.
+        return abs(cnt[1] - cnt[2]) >= 3;
     }
 };
